@@ -1,0 +1,147 @@
+body {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background-color: #fff3c7;
+    color: #f7418f;
+    height: 100vh;
+    padding: 0;
+    margin: 0;
+    font-size: 2vw;
+    text-align: center;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 1vw;
+    flex-grow: 1;
+}
+
+h1 {
+    font-size: 4vw;
+}
+
+#status {
+    font-family: 'monospace';
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    text-align: center;
+    font-size: 3vw;
+    border-bottom: 1px dashed orange;
+    padding-bottom: 1vh;
+}
+
+.quiz-wrapper {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#quiz {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    text-align: center;
+}
+
+#quiz span.num {
+    font-size: 12vw;
+    font-weight: bold;
+    padding: 1vh 4vw;
+}
+
+#quiz span#answer {
+    font-size: 12vw;
+    font-weight: bold;
+    border: 1px dashed transparent;
+    padding: 1vh 4vw;
+}
+
+#quiz span.op {
+    font-size: 12vw;
+    font-weight: bold;
+    padding: 1vh 4vw;
+}
+
+#candidates {
+    display: flex;
+    margin-top: 2vh;
+    width: 100%;
+    justify-content: space-between;
+    flex-wrap: wrap;
+
+}
+
+.candidate {
+    flex: 1 0 auto;
+    padding: 3vh 0;
+    margin: 1vh 1vw;
+    font-size: 6vw;
+    width: calc(25% - 2vw);
+    letter-spacing: 0.25vw;
+    background-color: #fec7b4;
+    color: #fc819e;
+    border: 1px solid #f7418f;
+    text-align: center;
+}
+
+@media (orientation: landscape) {
+    #candidates {
+        flex-wrap: nowrap; /* Don't wrap items in landscape orientation */
+    }
+
+    .candidate {
+        width: 3vw;
+    }
+}
+
+button.candidate:disabled {
+    background-color: #999;
+    border: 1px solid #666;
+    color: #666;
+    cursor: not-allowed;
+}
+
+.success {
+    background-color: lightgreen !important;
+    color: forestgreen !important;
+}
+
+.fail {
+    background-color: mediumvioletred !important;
+    color: lightcoral !important;
+
+}
+
+#countdown {
+    font-family: 'monospace';
+    text-align: right;
+    font-size: 6vw;
+    color: maroon;
+    width: 100%;
+    padding-right: 4vw;
+}
+
+.timeout {
+    background-color: #f7418f;
+    color: #fff3c7 !important;
+    text-align: center !important;
+}
+
+#cheer-mask {
+    position: absolute;
+    display: none;
+    height: 100vh;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+

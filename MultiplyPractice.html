@@ -5,134 +5,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>乘法练习</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.1.3/css/bootstrap.min.css">
-    <style>
-        body {
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            background-color: #2b2b2b;
-            color: #a9b7c6;
-            height: 100vh;
-            padding: 0;
-            margin: 0;
-            font-size: 2vw;
-            text-align: center;            
-        }
-
-        .container {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            max-width: 100%;
-            margin: 0 auto;
-            padding: 1vw;
-            flex-grow: 1;
-        }
-
-        h1 {
-            color: #6897bb;
-            font-size: 4vw;
-        }
-
-        #status {
-            font-family: 'monospace';
-            position: absolute;
-            top: 1vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-            text-align: center;
-            color: #6a8759;
-            font-size: 3vw;
-            border-bottom: 1px dashed #6a8759;
-            padding-bottom: 1vh;
-        }
-
-        #quiz {
-            display: flex;
-            justify-content: center;
-            width: 100%;
-            text-align: center;
-            color: #6a8759;
-        }
-
-        #quiz span.num {
-            color: #6a8759;
-            font-size: 12vw;
-            padding: 1vh 4vw;
-        }
-
-        #quiz span#answer {
-            color: lavender;
-            font-size: 12vw;
-            border: 1px dashed transparent;
-            padding: 1vh 4vw;
-        }
-
-        #quiz span.op {
-            font-size: 12vw;
-            color: #6a8759;
-            padding: 1vh 4vw;
-        }
-
-        #candidates {
-            position: absolute;
-            bottom: 2vh;
-            display: flex;  
-            margin-top: 2vh;          
-            width: 100%;
-            justify-content: space-between;
-            flex-wrap: wrap;
-
-        }
-
-        .candidate {
-            flex: 1 0 auto;
-            padding: 3vh 0;
-            margin: 1vh 1vw;
-            font-size: 6vw;
-            width: calc(25% - 2vw);            
-            letter-spacing: 0.25vw;
-            background-color: #6a8759;
-            color: #fff;
-            border: 1px solid #ccc;
-            text-align: center;
-        }
-        @media (orientation: landscape) {
-           #candidates {
-                flex-wrap: nowrap; /* Don't wrap items in landscape orientation */
-            }
-            .candidate {
-                width: 3vw;
-            }
-        }        
-
-        button.candidate:disabled {
-            background-color: #333;
-            border: 1px solid #111;
-            color: #666666;
-            cursor: not-allowed;
-        }
-
-        .success {
-            background-color: green !important;
-        }
-
-        .fail {
-            background-color: mediumvioletred !important;
-
-        }
-    </style>
 </head>
 
 <body>
 
-    <div class="container">
-        <pre id="status">开始练习了 ...</pre>
+<div class="container">
+    <div id="cheer-mask">
+        <img alt="cheers" src="img/cheers.gif" />
+    </div>
+    <pre id="status">开始练习了 ...</pre>
+    <div id="countdown">&nbsp;</div>
+    <div class="quiz-wrapper">
         <div id="quiz" class="debug">
             <span class="num" id="num1">3</span>
             <span class="op">&times;</span>
@@ -140,92 +25,157 @@
             <span class="op">=</span>
             <span class="num" id="answer">?</span>
         </div>
-        <div id="candidates">
-        </div>
     </div>
-    <audio id="sound"></audio>
-    <audio id="cheer" src="media/cheer.mp3"></audio>    
+    <div id="candidates">
+    </div>
+</div>
+<audio id="sound"></audio>
+<audio id="cheer" src="media/cheer.mp3"></audio>
 
-    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.1.3/js/bootstrap.min.js"></script>
-    <script>
-        var numCorrect = 0;
-        var numTotal = 0;
-        var numStrike = 0;
-        function shuffleArray(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                let j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
-        }
-        function restartQuiz() {
-            setTimeout(() => {
-                if (numStrike % 8 == 0 && numStrike > 0) {
-                    document.getElementById('cheer').play();
-                }
-                $('#candidates').empty();
-                $('#answer').text('?').removeClass();
-                if (numStrike < 4) {
-                    newQuiz(8);
-                } else if (numStrike < 8) {
-                    newQuiz(6);
-                } else if (numStrike < 24) {
-                    newQuiz(4);
-                } else {
-                    newQuiz(2);
-                }
-            }, 100);
-        }
-        function newQuiz(numCandidates) {
-            let num1 = Math.floor(Math.random() * 10);
-            let num2 = Math.floor(Math.random() * 10);
-            let answer = num1 * num2;
-            numTotal++;
-            $('#num1').text(num1);
-            $('#num2').text(num2);
-            var candidates = [answer];
-            for (let i = 0; i < numCandidates - 1; i++) {
-                let num = Math.floor(Math.random() * 100);
-                if (candidates.indexOf(num) == -1)
-                    candidates.push(num);
-                else
-                    i--;
-            }
-            shuffleArray(candidates);
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.1.3/js/bootstrap.min.js"></script>
+<script>
+  let numCorrect = 0;
+  let numTotal = 0;
+  let numStrike = 0;
+  let numTimeout = 0;
+  let globalCountDown = null;
+  let globalCountDownLeft = null;
+  const params = new URLSearchParams(window.location.search);
 
-            for (let i = 0; i < candidates.length; i++) {
-                $('#candidates').append(`<button class="candidate">${candidates[i]}</button>`);
-            }
-            $('.candidate').prop('disabled', false);
-            $(document).off('click', '.candidate');
-            $(document).on('click', '.candidate', function () {
-                $('.candidate').prop('disabled', true);
-                let num1 = parseInt($('#num1').text());
-                let num2 = parseInt($('#num2').text());
-                let answer = num1 * num2;
-                let myAnswer = parseInt($(this).text());
-                let sound = document.getElementById('sound');
-                console.log(numCorrect, numStrike);
-                $("#answer").text(myAnswer);
-                if (answer === myAnswer) {
-                    numCorrect++;
-                    numStrike++;
-                    $("#answer").removeClass().addClass('success')
-                    sound.src = 'media/success.mp3';
-                } else {
-                    numStrike = 0;
-                    $("#answer").removeClass().addClass('fail');
-                    sound.src = 'media/fail.mp3';
-                }
-                $('#status').text('当前得分 [' + numCorrect + ' / ' + numTotal + '] 连续答对 [' + numStrike + ']');
-                sound.play();
-            });
-        }
-        $(document).ready(function () {
-            document.getElementById('sound').onended = restartQuiz;
-            newQuiz(8);
-        })
-    </script>
+  function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+  }
+
+  function cheers() {
+    $('#cheer-mask').show().css('display', 'flex');
+    document.getElementById('cheer').play();
+  }
+
+  function restartQuiz() {
+    const cheerRound = parseInt(params.get("cheer_round") || "8")
+    let newQuizDelay = 100;
+    if (numStrike % cheerRound === 0 && numStrike > 0) {
+      cheers();
+      newQuizDelay = 3000;
+    }
+    setTimeout(() => {
+      $('#candidates').empty();
+      $('#answer').text('?').removeClass();
+      if (numStrike < 4) {
+        newQuiz(8);
+      } else if (numStrike < 8) {
+        newQuiz(6);
+      } else if (numStrike < 24) {
+        newQuiz(4);
+      } else {
+        newQuiz(2);
+      }
+    }, newQuizDelay);
+  }
+
+  function countDown() {
+    globalCountDownLeft--;
+    if (globalCountDownLeft > 0) {
+      $('#countdown').text(globalCountDownLeft);
+      globalCountDown = setTimeout(countDown, 1000);
+    } else {
+      $('#countdown').addClass('timeout').text('超时')
+      numStrike = 0;
+      numTimeout++;
+      setTimeout(restartQuiz, 1000);
+    }
+  }
+
+  function enableGlobalCountDown() {
+    const totalCountDown = parseInt(params.get('count_down') || '0');
+    if (totalCountDown > 0) {
+      if (globalCountDown)
+        clearTimeout(globalCountDown);
+      globalCountDownLeft = totalCountDown;
+      $('#countdown').removeClass().html(globalCountDownLeft);
+      globalCountDown = setTimeout(countDown, 1000);
+      console.log(globalCountDown);
+    }
+  }
+
+  function onClickCandidate() {
+    if (globalCountDown)
+      clearTimeout(globalCountDown);
+    $('.candidate').prop('disabled', true);
+    const num1 = parseInt($('#num1').text());
+    const num2 = parseInt($('#num2').text());
+    const answer = num1 * num2;
+    const myAnswer = parseInt($(this).text());
+    const sound = document.getElementById('sound');
+    const answerBox = $('#answer');
+    console.log(numCorrect, numStrike);
+    answerBox.text(myAnswer);
+    if (answer === myAnswer) {
+      numCorrect++;
+      numStrike++;
+      answerBox.removeClass().addClass('success');
+      sound.src = 'media/success.mp3';
+    } else {
+      numStrike = 0;
+      answerBox.removeClass().addClass('fail');
+      sound.src = 'media/fail.mp3';
+    }
+    sound.play();
+  }
+
+  function newQuiz(numCandidates) {
+    const minNum = parseInt(params.get('min_num') || '1');
+    const maxNum = 10 - minNum;
+    const num1 = minNum + Math.floor(Math.random() * maxNum);
+    const num2 = minNum + Math.floor(Math.random() * maxNum);
+    const answer = num1 * num2;
+    console.log(`maxNum = ${maxNum}, num1 = ${num1}, num2 = ${num2}, answer = ${answer}`);
+    $('#status').
+        text('当前得分 [' + numCorrect + ' / ' + numTotal + '] 连续答对 [' + numStrike + '] 超时 [' + numTimeout + ']');
+    $('#cheer-mask').hide();
+    numTotal++;
+
+    let candidates = [answer];
+    for (let i = 0; i < numCandidates - 1; i++) {
+      let num = Math.floor(Math.random() * 100);
+      if (candidates.indexOf(num) === -1)
+        candidates.push(num);
+      else
+        i--;
+    }
+    shuffleArray(candidates);
+
+    let buttons = '';
+    for (let i = 0; i < candidates.length; i++) {
+      buttons += `<button class="candidate">${candidates[i]}</button>`;
+    }
+
+    const candidateBox = $('#candidates');
+    candidateBox.ready(function() {
+      enableGlobalCountDown();
+      $('.candidate').prop('disabled', false);
+      $('#num1').text(num1);
+      $('#num2').text(num2);
+    });
+    candidateBox.html(buttons);
+    $(document).off('click', '.candidate');
+    $(document).on('click', '.candidate', onClickCandidate);
+  }
+
+  $(document).ready(function() {
+    document.getElementById('sound').onended = restartQuiz;
+    // preload things
+    (new Image()).src = 'img/cheers.gif';
+    (new Audio()).src = 'media/cheer.mp3';
+    (new Audio()).src = 'media/success.mp3';
+    (new Audio()).src = 'media/fail.mp3';
+    newQuiz(8);
+  });
+</script>
 </body>
 
 </html>
