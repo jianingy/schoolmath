@@ -73,7 +73,7 @@ h1 {
 
 #candidates {
     display: flex;
-    margin-top: 2vh;
+    margin-bottom: 12vh;
     width: 100%;
     justify-content: space-between;
     flex-wrap: wrap;
