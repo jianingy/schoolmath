@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fleeing Emoji Balls</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #f0f8ff;
+            font-family: Arial, sans-serif;
+            cursor: none;
+        }
+
+        .ball {
+            position: absolute;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            user-select: none;
+            transition: transform 0.2s ease;
+            font-size: 24px;
+            width: 50px;
+            height: 50px;
+        }
+
+        .cursor {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="none" stroke="rgba(0,0,0,0.6)" stroke-width="2"/><circle cx="50" cy="50" r="30" fill="none" stroke="rgba(0,0,0,0.6)" stroke-width="2"/><circle cx="50" cy="50" r="15" fill="none" stroke="rgba(0,0,0,0.6)" stroke-width="2"/><line x1="5" y1="50" x2="95" y2="50" stroke="rgba(0,0,0,0.6)" stroke-width="2"/><line x1="50" y1="5" x2="50" y2="95" stroke="rgba(0,0,0,0.6)" stroke-width="2"/><line x1="14.64" y1="14.64" x2="85.36" y2="85.36" stroke="rgba(0,0,0,0.6)" stroke-width="2"/><line x1="85.36" y1="14.64" x2="14.64" y2="85.36" stroke="rgba(0,0,0,0.6)" stroke-width="2"/></svg>');
+            background-size: contain;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.7;
+            border: 2px dashed rgba(30, 100, 200, 0.7);
+            border-radius: 50%;
+        }
+
+        .instructions {
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            background-color: rgba(255, 255, 255, 0.7);
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 14px;
+            z-index: 1000;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="cursor"></div>
+    <div class="instructions">
+        Move your cursor near the emojis to see them flee!<br>
+        Press + to add more emojis, - to remove emojis.
+    </div>
+
+    <script>
+        const cursor = document.querySelector('.cursor');
+        const body = document.querySelector('body');
+        const happyEmojis = ['😀', '😊', '😄', '😁', '😍', '🥰', '😎', '😋'];
+        const scaredEmojis = ['😨', '😱', '😳', '😖', '🥺', '😬', '😰', '😢'];
+        const ballCount = 300;
+        const balls = [];
+        const mousePosition = { x: -100, y: -100 }; // Start off-screen
+        const fleeDistance = 150; // Distance at which balls start fleeing
+        const maxSpeed = 5;
+
+        // Create the balls
+        for (let i = 0; i < ballCount; i++) {
+            createBall();
+        }
+
+        function createBall() {
+            const ball = document.createElement('div');
+            ball.className = 'ball';
+
+            // Random position
+            const x = Math.random() * (window.innerWidth - 50);
+            const y = Math.random() * (window.innerHeight - 50);
+
+            // Random happy emoji
+            const emoji = happyEmojis[Math.floor(Math.random() * happyEmojis.length)];
+
+            // Random size between 40px and 70px
+            const size = 40 + Math.random() * 30;
+
+            ball.style.width = `${size}px`;
+            ball.style.height = `${size}px`;
+            ball.style.left = `${x}px`;
+            ball.style.top = `${y}px`;
+            ball.textContent = emoji;
+            ball.dataset.originalEmoji = emoji;
+            ball.dataset.isScared = 'false';
+
+            // Add some gentle floating animation
+            ball.style.animation = `float ${3 + Math.random() * 4}s infinite alternate ease-in-out`;
+
+            // Store ball data
+            const ballData = {
+                element: ball,
+                x,
+                y,
+                vx: 0,
+                vy: 0,
+                size,
+                originalEmoji: emoji,
+                scaredEmoji: scaredEmojis[Math.floor(Math.random() * scaredEmojis.length)]
+            };
+
+            balls.push(ballData);
+            body.appendChild(ball);
+        }
+
+        // Track mouse position
+        document.addEventListener('mousemove', (e) => {
+            mousePosition.x = e.clientX;
+            mousePosition.y = e.clientY;
+
+            // Update cursor position
+            cursor.style.left = `${mousePosition.x}px`;
+            cursor.style.top = `${mousePosition.y}px`;
+        });
+
+        // Animation loop
+        function update() {
+            for (const ball of balls) {
+                const dx = mousePosition.x - ball.x - ball.size / 2;
+                const dy = mousePosition.y - ball.y - ball.size / 2;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+
+                // Check if the ball should flee
+                if (distance < fleeDistance) {
+                    // Calculate flee direction (away from mouse)
+                    const angle = Math.atan2(dy, dx);
+                    const fleeFactor = 1 - distance / fleeDistance; // Stronger flee when closer
+
+                    // Add velocity away from mouse
+                    ball.vx -= Math.cos(angle) * maxSpeed * fleeFactor;
+                    ball.vy -= Math.sin(angle) * maxSpeed * fleeFactor;
+
+                    // Change to scared emoji
+                    if (ball.element.dataset.isScared === 'false') {
+                        ball.element.textContent = ball.scaredEmoji;
+                        ball.element.dataset.isScared = 'true';
+                    }
+                } else {
+                    // Return to happy emoji if not scared anymore
+                    if (ball.element.dataset.isScared === 'true') {
+                        ball.element.textContent = ball.originalEmoji;
+                        ball.element.dataset.isScared = 'false';
+                    }
+                }
+
+                // Apply friction
+                ball.vx *= 0.9;
+                ball.vy *= 0.9;
+
+                // Update position
+                ball.x += ball.vx;
+                ball.y += ball.vy;
+
+                // Boundary checking to keep balls in viewport
+                if (ball.x < 0) {
+                    ball.x = 0;
+                    ball.vx *= -0.5; // Bounce
+                }
+                if (ball.x + ball.size > window.innerWidth) {
+                    ball.x = window.innerWidth - ball.size;
+                    ball.vx *= -0.5; // Bounce
+                }
+                if (ball.y < 0) {
+                    ball.y = 0;
+                    ball.vy *= -0.5; // Bounce
+                }
+                if (ball.y + ball.size > window.innerHeight) {
+                    ball.y = window.innerHeight - ball.size;
+                    ball.vy *= -0.5; // Bounce
+                }
+
+                // Update element position
+                ball.element.style.left = `${ball.x}px`;
+                ball.element.style.top = `${ball.y}px`;
+            }
+
+            requestAnimationFrame(update);
+        }
+
+        // Start the animation
+        update();
+
+        // Handle keyboard events to add/remove balls
+        document.addEventListener('keydown', (e) => {
+            if (e.key === '+' || e.key === '=') {
+                createBall();
+            } else if (e.key === '-' && balls.length > 1) {
+                // Remove last ball
+                const ballToRemove = balls.pop();
+                ballToRemove.element.remove();
+            }
+        });
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            for (const ball of balls) {
+                // Keep balls within new window boundaries
+                if (ball.x + ball.size > window.innerWidth) {
+                    ball.x = window.innerWidth - ball.size;
+                }
+                if (ball.y + ball.size > window.innerHeight) {
+                    ball.y = window.innerHeight - ball.size;
+                }
+            }
+        });
+
+        // Add CSS for floating animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes float {
+                0% { transform: translateY(0) rotate(0deg); }
+                50% { transform: translateY(-10px) rotate(5deg); }
+                100% { transform: translateY(0) rotate(-5deg); }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+
+</html>
