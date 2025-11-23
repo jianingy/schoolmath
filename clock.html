@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <title>Flip Clock</title>
+    <style>
+        body {
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: -webkit-flex;
+            display: flex;
+            -webkit-justify-content: center;
+            justify-content: center;
+            -webkit-align-items: center;
+            align-items: center;
+        }
+
+        .clock {
+            display: -webkit-flex;
+            display: flex;
+            -webkit-flex-direction: row;
+            flex-direction: row;
+            -webkit-justify-content: center;
+            justify-content: center;
+            -webkit-align-items: center;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+        }
+
+        .group {
+            display: -webkit-flex;
+            display: flex;
+            margin: 0 10px;
+        }
+
+        .separator {
+            font-size: 150px;
+            font-weight: bold;
+            color: #555;
+            margin: 0 15px;
+            padding-bottom: 20px;
+        }
+
+        .digit {
+            position: relative;
+            width: 200px;
+            height: 300px;
+            background-color: #333;
+            border-radius: 12px;
+            margin: 0 5px;
+            font-size: 250px;
+            font-weight: bold;
+            text-align: center;
+            color: #ddd;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6);
+            -webkit-perspective: 600px;
+            perspective: 600px;
+        }
+
+        /* Common styles for halves */
+        .half {
+            position: absolute;
+            left: 0;
+            width: 100%;
+            height: 50%;
+            overflow: hidden;
+            background-color: #333;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+        }
+
+        .text {
+            display: block;
+            height: 300px;
+            line-height: 300px;
+            width: 100%;
+        }
+
+        /* Static Top (Next Number) */
+        .top {
+            top: 0;
+            border-radius: 6px 6px 0 0;
+            border-bottom: 1px solid #1a1a1a;
+            z-index: 1;
+        }
+
+        .top .text {
+            /* Default alignment is fine for top half */
+        }
+
+        /* Static Bottom (Current Number) */
+        .bottom {
+            bottom: 0;
+            border-radius: 0 0 6px 6px;
+            border-top: 1px solid #1a1a1a;
+            z-index: 0;
+            background-color: #3a3a3a;
+            /* Slight gradient effect */
+        }
+
+        .bottom .text {
+            margin-top: -150px;
+            /* Shift up by half height */
+        }
+
+        /* Flap Container */
+        .flap {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 50%;
+            z-index: 2;
+            -webkit-transform-style: preserve-3d;
+            transform-style: preserve-3d;
+            -webkit-transform-origin: bottom;
+            transform-origin: bottom;
+        }
+
+        /* Flap Faces */
+        .flap-face {
+            position: absolute;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            background-color: #333;
+        }
+
+        /* Flap Front (Current Top) */
+        .flap-front {
+            top: 0;
+            border-radius: 6px 6px 0 0;
+            border-bottom: 1px solid #1a1a1a;
+        }
+
+        .flap-front .text {
+            /* Default alignment */
+        }
+
+        /* Flap Back (Next Bottom) */
+        .flap-back {
+            top: 0;
+            border-radius: 0 0 6px 6px;
+            /* Looks like bottom when flipped */
+            border-top: 1px solid #1a1a1a;
+            background-color: #3a3a3a;
+            -webkit-transform: rotateX(180deg);
+            transform: rotateX(180deg);
+        }
+
+        .flap-back .text {
+            margin-top: -150px;
+            /* Shift up */
+        }
+
+        /* Responsive scaling for smaller screens */
+        @media (max-width: 768px) or (max-height: 600px) {
+            .digit {
+                width: 120px;
+                height: 180px;
+                font-size: 150px;
+            }
+
+            .text {
+                height: 180px;
+                line-height: 180px;
+            }
+
+            .bottom .text,
+            .flap-back .text {
+                margin-top: -90px;
+            }
+
+            .separator {
+                font-size: 90px;
+                margin: 0 10px;
+            }
+
+            .group {
+                margin: 0 5px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="clock" id="clock"></div>
+
+    <script>
+        // Helper to create DOM elements
+        function createDigit(id) {
+            var div = document.createElement('div');
+            div.className = 'digit';
+            div.id = id;
+            div.dataset.val = '0';
+
+            // Static Top (Next)
+            var staticTop = document.createElement('div');
+            staticTop.className = 'half top';
+            staticTop.innerHTML = '<div class="text">0</div>';
+            div.appendChild(staticTop);
+
+            // Static Bottom (Current)
+            var staticBottom = document.createElement('div');
+            staticBottom.className = 'half bottom';
+            staticBottom.innerHTML = '<div class="text">0</div>';
+            div.appendChild(staticBottom);
+
+            // Flap
+            var flap = document.createElement('div');
+            flap.className = 'flap';
+
+            // Flap Front (Current Top)
+            var flapFront = document.createElement('div');
+            flapFront.className = 'flap-face flap-front';
+            flapFront.innerHTML = '<div class="text">0</div>';
+            flap.appendChild(flapFront);
+
+            // Flap Back (Next Bottom)
+            var flapBack = document.createElement('div');
+            flapBack.className = 'flap-face flap-back';
+            flapBack.innerHTML = '<div class="text">0</div>';
+            flap.appendChild(flapBack);
+
+            div.appendChild(flap);
+            return div;
+        }
+
+        // Initialize Clock
+        var clockEl = document.getElementById('clock');
+        var groups = ['hours', 'minutes', 'seconds'];
+
+        for (var i = 0; i < groups.length; i++) {
+            var group = document.createElement('div');
+            group.className = 'group';
+            group.appendChild(createDigit(groups[i] + '0'));
+            group.appendChild(createDigit(groups[i] + '1'));
+            clockEl.appendChild(group);
+
+            if (i < groups.length - 1) {
+                var sep = document.createElement('div');
+                sep.className = 'separator';
+                sep.innerHTML = ':';
+                clockEl.appendChild(sep);
+            }
+        }
+
+        // Flip Animation Logic
+        function flip(digitId, newVal) {
+            var digit = document.getElementById(digitId);
+            var currentVal = digit.dataset.val;
+
+            if (currentVal === newVal) return;
+
+            var flap = digit.querySelector('.flap');
+            var staticTop = digit.querySelector('.top .text');
+            var staticBottom = digit.querySelector('.bottom .text');
+            var flapFront = digit.querySelector('.flap-front .text');
+            var flapBack = digit.querySelector('.flap-back .text');
+
+            // Prepare next state
+            staticTop.innerText = newVal;
+            flapBack.innerText = newVal;
+
+            // Reset animation state (in case it was interrupted or finished)
+            flap.style.webkitTransition = 'none';
+            flap.style.transition = 'none';
+            flap.style.webkitTransform = 'rotateX(0deg)';
+            flap.style.transform = 'rotateX(0deg)';
+
+            // Force reflow to apply reset
+            void flap.offsetWidth;
+
+            // Start animation
+            flap.style.webkitTransition = '-webkit-transform 0.5s ease-in';
+            flap.style.transition = 'transform 0.5s ease-in';
+            flap.style.webkitTransform = 'rotateX(-180deg)';
+            flap.style.transform = 'rotateX(-180deg)';
+
+            // On finish
+            setTimeout(function () {
+                // Update static bottom and flap front to new value
+                staticBottom.innerText = newVal;
+                flapFront.innerText = newVal;
+                digit.dataset.val = newVal;
+
+                // Reset flap silently
+                flap.style.webkitTransition = 'none';
+                flap.style.transition = 'none';
+                flap.style.webkitTransform = 'rotateX(0deg)';
+                flap.style.transform = 'rotateX(0deg)';
+            }, 500);
+        }
+
+        function updateTime() {
+            var now = new Date();
+            var h = now.getHours();
+            var m = now.getMinutes();
+            var s = now.getSeconds();
+
+            var hStr = (h < 10 ? '0' : '') + h;
+            var mStr = (m < 10 ? '0' : '') + m;
+            var sStr = (s < 10 ? '0' : '') + s;
+
+            flip('hours0', hStr.charAt(0));
+            flip('hours1', hStr.charAt(1));
+            flip('minutes0', mStr.charAt(0));
+            flip('minutes1', mStr.charAt(1));
+            flip('seconds0', sStr.charAt(0));
+            flip('seconds1', sStr.charAt(1));
+        }
+
+        // Start
+        setInterval(updateTime, 1000);
+        updateTime();
+    </script>
+</body>
+
+</html>
