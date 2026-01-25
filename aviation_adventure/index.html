@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My First Flight - English Reading</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .banner {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            object-fit: cover;
+            display: block;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        h1 {
+            color: #2c3e50;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        .story-text {
+            line-height: 2;
+            font-size: 1.2em;
+            color: #34495e;
+        }
+
+        .sentence {
+            display: inline;
+            transition: background-color 0.3s ease;
+            padding: 2px 0;
+        }
+
+        .sentence.active {
+            background-color: #ffe066;
+            font-weight: 600;
+            padding: 4px 6px;
+            border-radius: 4px;
+        }
+
+        .controls {
+            position: sticky;
+            bottom: 0;
+            background: linear-gradient(180deg, #2c3e50 0%, #1a252f 100%);
+            padding: 25px;
+            box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .translation {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ecf0f1;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            min-height: 50px;
+            font-size: 1.1em;
+            line-height: 1.6;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            font-size: 1.1em;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        #playBtn {
+            font-size: 1.3em;
+            padding: 18px 40px;
+        }
+
+        .vocab {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .vocab h2 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+
+        .vocab ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .vocab li {
+            padding: 10px 0;
+            color: #555;
+            font-size: 1.1em;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .vocab li:last-child {
+            border-bottom: none;
+        }
+
+        .info {
+            margin-top: 20px;
+            padding: 15px;
+            background: #e8f4f8;
+            border-radius: 8px;
+            color: #2c3e50;
+        }
+
+        .info p {
+            margin: 5px 0;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            .story-text {
+                font-size: 1.1em;
+            }
+
+            button {
+                padding: 12px 20px;
+                font-size: 1em;
+            }
+
+            #playBtn {
+                font-size: 1.2em;
+                padding: 15px 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="content.png" alt="My First Flight" class="banner">
+        
+        <div class="content">
+            <h1>My First Flight</h1>
+            
+            <div class="story-text" id="storyText">
+                <span class="sentence" data-audio="001.mp3" data-translation="我的第一次飞行">My First Flight</span>. 
+                <span class="sentence" data-audio="002.mp3" data-translation="今年夏天，我和家人去了机场">My family and I went to the airport this summer</span>. 
+                <span class="sentence" data-audio="003.mp3" data-translation="我很开心，因为这是我第一次坐飞机">I was happy because it was my first time to fly by plane</span>. 
+                <span class="sentence" data-audio="004.mp3" data-translation="在机场，我们看到了许多大飞机">At the airport, we saw many big planes</span>. 
+                <span class="sentence" data-audio="005.mp3" data-translation="我爸爸说飞机可以快速飞行，带我们去不同的国家">My father said planes can travel fast and take us to different countries</span>. 
+                <span class="sentence" data-audio="006.mp3" data-translation="我们走到登机口等待">We walked to the gate and waited</span>. 
+                <span class="sentence" data-audio="007.mp3" data-translation="我看着一架飞机到达">I watched a plane arrive</span>. 
+                <span class="sentence" data-audio="008.mp3" data-translation="太神奇了！">It was amazing</span>! 
+                <span class="sentence" data-audio="009.mp3" data-translation="很快，到了上飞机的时间">Soon, it was time to get on our plane</span>. 
+                <span class="sentence" data-audio="010.mp3" data-translation="当飞机开始飞行时，我向外看">When the plane started to fly, I looked out</span>. 
+                <span class="sentence" data-audio="011.mp3" data-translation="汽车和房子看起来好小！">The cars and houses looked so small</span>! 
+                <span class="sentence" data-audio="012.mp3" data-translation="我妈妈说人们要学习很多年才能学会驾驶飞机">My mother said people study for many years to learn how to fly planes</span>. 
+                <span class="sentence" data-audio="013.mp3" data-translation="这是一次美妙的旅行，我希望很快再次坐飞机">It was a wonderful trip, and I hope to fly by plane soon</span>.
+            </div>
+
+            <div class="info">
+                <p><strong>Difficulty Level:</strong> C</p>
+                <p><strong>Estimated Reading Time:</strong> 2 minutes</p>
+            </div>
+
+            <div class="vocab">
+                <h2>Vocabulary Reference</h2>
+                <ul>
+                    <li><strong>flight:</strong> 航班，飞行</li>
+                    <li><strong>trip:</strong> 旅行</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="controls">
+            <div class="translation" id="translation">Click play to start reading</div>
+            <div class="button-group">
+                <button id="prevBtn" onclick="playPrevious()">⏮ Previous</button>
+                <button id="playBtn" onclick="togglePlay()">▶ Play</button>
+                <button id="nextBtn" onclick="playNext()">Next ⏭</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentIndex = 0;
+        let isPlaying = false;
+        let audio = new Audio();
+        const sentences = document.querySelectorAll('.sentence');
+        const playBtn = document.getElementById('playBtn');
+        const translation = document.getElementById('translation');
+
+        audio.addEventListener('ended', () => {
+            if (isPlaying && currentIndex < sentences.length - 1) {
+                currentIndex++;
+                playCurrent();
+            } else {
+                stopPlaying();
+            }
+        });
+
+        function togglePlay() {
+            if (isPlaying) {
+                stopPlaying();
+            } else {
+                startPlaying();
+            }
+        }
+
+        function startPlaying() {
+            isPlaying = true;
+            playBtn.textContent = '⏸ Pause';
+            playCurrent();
+        }
+
+        function stopPlaying() {
+            isPlaying = false;
+            audio.pause();
+            playBtn.textContent = '▶ Play';
+            clearHighlight();
+        }
+
+        function playCurrent() {
+            if (currentIndex >= sentences.length) {
+                stopPlaying();
+                currentIndex = 0;
+                return;
+            }
+
+            const sentence = sentences[currentIndex];
+            highlightSentence(currentIndex);
+            
+            const audioFile = sentence.dataset.audio;
+            const translationText = sentence.dataset.translation;
+            
+            translation.textContent = translationText;
+            audio.src = audioFile;
+            audio.play();
+        }
+
+        function playPrevious() {
+            if (currentIndex > 0) {
+                currentIndex--;
+                isPlaying = false;
+                playBtn.textContent = '▶ Play';
+                highlightSentence(currentIndex);
+                
+                const sentence = sentences[currentIndex];
+                translation.textContent = sentence.dataset.translation;
+                audio.src = sentence.dataset.audio;
+                audio.play();
+            }
+        }
+
+        function playNext() {
+            if (currentIndex < sentences.length - 1) {
+                currentIndex++;
+                isPlaying = false;
+                playBtn.textContent = '▶ Play';
+                highlightSentence(currentIndex);
+                
+                const sentence = sentences[currentIndex];
+                translation.textContent = sentence.dataset.translation;
+                audio.src = sentence.dataset.audio;
+                audio.play();
+            }
+        }
+
+        function highlightSentence(index) {
+            sentences.forEach((s, i) => {
+                if (i === index) {
+                    s.classList.add('active');
+                } else {
+                    s.classList.remove('active');
+                }
+            });
+        }
+
+        function clearHighlight() {
+            sentences.forEach(s => s.classList.remove('active'));
+            translation.textContent = 'Click play to start reading';
+        }
+
+        // Initialize
+        translation.textContent = 'Click play to start reading';
+    </script>
+</body>
+</html>
