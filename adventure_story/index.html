@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Lost Pupil - English Reading</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            background: linear-gradient(135deg, #89CFF0 0%, #4A90A4 100%);
+            min-height: 100vh;
+            color: #333;
+            padding-bottom: 100px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header with banner image */
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .banner {
+            width: 100%;
+            max-width: 900px;
+            height: auto;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            margin: 0 auto;
+            display: block;
+            aspect-ratio: 16 / 9;
+            object-fit: cover;
+        }
+
+        /* Content area */
+        .content {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            margin: 30px 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            line-height: 1.8;
+        }
+
+        .title {
+            text-align: center;
+            color: #2E8B57;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            font-weight: bold;
+        }
+
+        .story-text {
+            font-size: 1.2em;
+            color: #2c3e50;
+            text-align: justify;
+            margin-bottom: 30px;
+        }
+
+        .story-text .sentence {
+            transition: all 0.3s ease;
+            padding: 2px 0;
+        }
+
+        .story-text .sentence.highlight {
+            background: linear-gradient(120deg, #89CFF0 0%, #B8E6F7 100%);
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-weight: 500;
+            box-shadow: 0 2px 8px rgba(137, 207, 240, 0.4);
+        }
+
+        .info-section {
+            border-top: 2px solid #eee;
+            padding-top: 20px;
+            margin-top: 20px;
+        }
+
+        .difficulty {
+            color: #27ae60;
+            font-weight: bold;
+        }
+
+        .vocabulary {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+
+        .vocabulary h4 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .vocabulary ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        .vocabulary li {
+            margin-bottom: 5px;
+            padding-left: 15px;
+            position: relative;
+        }
+
+        .vocabulary li:before {
+            content: "•";
+            color: #2E8B57;
+            position: absolute;
+            left: 0;
+        }
+
+        /* Player controls */
+        .player-controls {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(44, 62, 80, 0.95);
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 -5px 20px rgba(0,0,0,0.2);
+        }
+
+        .control-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .control-btn:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        .control-btn:active {
+            transform: translateY(0);
+        }
+
+        .control-btn:disabled {
+            background: #7f8c8d;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .play-btn {
+            background: #2E8B57;
+            padding: 15px 25px;
+            font-size: 18px;
+        }
+
+        .play-btn:hover {
+            background: #246841;
+        }
+
+        .play-btn.playing {
+            background: #e74c3c;
+        }
+
+        .play-btn.playing:hover {
+            background: #c0392b;
+        }
+
+        .current-sentence {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            margin: 0 20px;
+            min-width: 300px;
+            text-align: center;
+            font-style: italic;
+            font-size: 14px;
+        }
+
+        .progress {
+            color: white;
+            font-size: 14px;
+            margin-left: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .title {
+                font-size: 2em;
+            }
+
+            .story-text {
+                font-size: 1.1em;
+            }
+
+            .player-controls {
+                flex-wrap: wrap;
+                padding: 15px;
+            }
+
+            .current-sentence {
+                order: -1;
+                margin: 0 0 10px 0;
+                min-width: 100%;
+            }
+
+            .control-btn {
+                padding: 10px 15px;
+                font-size: 14px;
+            }
+
+            .play-btn {
+                padding: 12px 20px;
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="content.png" alt="The Lost Pupil" class="banner">
+        </div>
+
+        <div class="content">
+            <h1 class="title">The Lost Pupil</h1>
+            
+            <div class="story-text" id="storyText">
+                <p><span class="sentence" data-index="0"># The Lost Pupil.</span></p>
+                
+                <p><span class="sentence" data-index="1">Emma was a young pupil in Grade Five who loved animals more than anything.</span>
+                <span class="sentence" data-index="2">Every day after school, she would visit the zoo near her neighbourhood to watch the animals.</span>
+                <span class="sentence" data-index="3">Her favourite was a clever monkey named Thomas who could catch peanuts in the air.</span>
+                <span class="sentence" data-index="4">One Saturday morning, Emma arrived at the zoo early and found something amazing.</span>
+                <span class="sentence" data-index="5">A small penguin had escaped from its enclosure and was walking on the sidewalk.</span>
+                <span class="sentence" data-index="6">The penguin looked scared and lost.</span>
+                <span class="sentence" data-index="7">Emma felt worried about the poor bird.</span>
+                <span class="sentence" data-index="8">She wanted to help, but she didn't know what to do.</span>
+                <span class="sentence" data-index="9">"Be careful!" shouted the zookeeper from across the street.</span>
+                <span class="sentence" data-index="10">Emma stayed calm and spoke softly to the penguin.</span>
+                <span class="sentence" data-index="11">She remembered her teacher once said animals can hear your kind voice.</span>
+                <span class="sentence" data-index="12">The penguin stopped and looked at her with curious eyes.</span>
+                <span class="sentence" data-index="13">Emma slowly walked towards it, keeping a safe distance.</span>
+                <span class="sentence" data-index="14">She took out her sandwich from her schoolbag and placed it on the ground.</span>
+                <span class="sentence" data-index="15">The hungry penguin came closer and started to eat.</span>
+                <span class="sentence" data-index="16">While the penguin was busy eating, the zookeeper arrived with a warm blanket.</span>
+                <span class="sentence" data-index="17">Together, they carefully brought the penguin back to its home.</span>
+                <span class="sentence" data-index="18">The zookeeper was very proud of Emma's brave actions.</span>
+                <span class="sentence" data-index="19">"You were really helpful today," he said with a big smile.</span>
+                <span class="sentence" data-index="20">As a thank you, he gave Emma a special volunteer card.</span>
+                <span class="sentence" data-index="21">Now Emma could visit the zoo for free and help take care of the animals.</span>
+                <span class="sentence" data-index="22">She learned that being patient and kind can solve many problems.</span>
+                <span class="sentence" data-index="23">From that day on, Emma spent every weekend as a volunteer at the zoo.</span>
+                <span class="sentence" data-index="24">She helped feed the animals, clean their rooms, and teach visitors about wildlife.</span>
+                <span class="sentence" data-index="25">Her dream was to become a scientist who studies animals in the future.</span></p>
+            </div>
+
+            <div class="info-section">
+                <p><strong class="difficulty">Difficulty Level</strong>: D (Intermediate-Advanced - 120-200 words, up to 5 additional common words)</p>
+                <p><strong>Estimated Reading Time</strong>: 2 minutes</p>
+
+                <div class="vocabulary">
+                    <h4>Vocabulary Reference</h4>
+                    <ul>
+                        <li><strong>enclosure</strong>: an area surrounded by fences or walls where animals are kept</li>
+                        <li><strong>wildlife</strong>: animals living in their natural environment</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Player controls -->
+    <div class="player-controls">
+        <button class="control-btn" id="prevBtn" onclick="previousSentence()">
+            ⏮ Previous
+        </button>
+        
+        <button class="control-btn play-btn" id="playBtn" onclick="togglePlay()">
+            ▶ Play
+        </button>
+        
+        <button class="control-btn" id="nextBtn" onclick="nextSentence()">
+            ⏭ Next
+        </button>
+        
+        <div class="current-sentence" id="currentSentence">
+            Click Play to start reading
+        </div>
+        
+        <div class="progress" id="progress">
+            0 / 26
+        </div>
+    </div>
+
+    <script>
+        let currentAudioIndex = 0;
+        let isPlaying = false;
+        let currentAudio = null;
+        const totalSentences = 26;
+        
+        const sentences = [
+            "# The Lost Pupil.",
+            "Emma was a young pupil in Grade Five who loved animals more than anything.",
+            "Every day after school, she would visit the zoo near her neighbourhood to watch the animals.",
+            "Her favourite was a clever monkey named Thomas who could catch peanuts in the air.",
+            "One Saturday morning, Emma arrived at the zoo early and found something amazing.",
+            "A small penguin had escaped from its enclosure and was walking on the sidewalk.",
+            "The penguin looked scared and lost.",
+            "Emma felt worried about the poor bird.",
+            "She wanted to help, but she didn't know what to do.",
+            '"Be careful!" shouted the zookeeper from across the street.',
+            "Emma stayed calm and spoke softly to the penguin.",
+            "She remembered her teacher once said animals can hear your kind voice.",
+            "The penguin stopped and looked at her with curious eyes.",
+            "Emma slowly walked towards it, keeping a safe distance.",
+            "She took out her sandwich from her schoolbag and placed it on the ground.",
+            "The hungry penguin came closer and started to eat.",
+            "While the penguin was busy eating, the zookeeper arrived with a warm blanket.",
+            "Together, they carefully brought the penguin back to its home.",
+            "The zookeeper was very proud of Emma's brave actions.",
+            '"You were really helpful today," he said with a big smile.',
+            "As a thank you, he gave Emma a special volunteer card.",
+            "Now Emma could visit the zoo for free and help take care of the animals.",
+            "She learned that being patient and kind can solve many problems.",
+            "From that day on, Emma spent every weekend as a volunteer at the zoo.",
+            "She helped feed the animals, clean their rooms, and teach visitors about wildlife.",
+            "Her dream was to become a scientist who studies animals in the future."
+        ];
+
+        function updateUI() {
+            // Clear all highlights
+            document.querySelectorAll('.sentence').forEach(s => s.classList.remove('highlight'));
+            
+            // Highlight current sentence
+            const currentSentence = document.querySelector(`.sentence[data-index="${currentAudioIndex}"]`);
+            if (currentSentence) {
+                currentSentence.classList.add('highlight');
+                currentSentence.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+            
+            document.getElementById('currentSentence').textContent = sentences[currentAudioIndex];
+            document.getElementById('progress').textContent = `${currentAudioIndex + 1} / ${totalSentences}`;
+            
+            document.getElementById('prevBtn').disabled = currentAudioIndex === 0;
+            document.getElementById('nextBtn').disabled = currentAudioIndex === totalSentences - 1;
+        }
+
+        function loadAudio(index) {
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio = null;
+            }
+            
+            const audioIndex = (index + 1).toString().padStart(3, '0');
+            currentAudio = new Audio(`voices/${audioIndex}.mp3`);
+            
+            currentAudio.onended = function() {
+                if (currentAudioIndex < totalSentences - 1) {
+                    currentAudioIndex++;
+                    updateUI();
+                    loadAudio(currentAudioIndex);
+                    currentAudio.play();
+                } else {
+                    // Finished playing all sentences
+                    stopPlaying();
+                }
+            };
+            
+            currentAudio.onerror = function() {
+                console.error(`Error loading audio: voices/${audioIndex}.mp3`);
+            };
+        }
+
+        function togglePlay() {
+            if (!isPlaying) {
+                startPlaying();
+            } else {
+                pausePlaying();
+            }
+        }
+
+        function startPlaying() {
+            loadAudio(currentAudioIndex);
+            currentAudio.play();
+            isPlaying = true;
+            document.getElementById('playBtn').innerHTML = '⏸ Pause';
+            document.getElementById('playBtn').classList.add('playing');
+            updateUI();
+        }
+
+        function pausePlaying() {
+            if (currentAudio) {
+                currentAudio.pause();
+            }
+            isPlaying = false;
+            document.getElementById('playBtn').innerHTML = '▶ Play';
+            document.getElementById('playBtn').classList.remove('playing');
+        }
+
+        function stopPlaying() {
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio = null;
+            }
+            isPlaying = false;
+            document.getElementById('playBtn').innerHTML = '▶ Play';
+            document.getElementById('playBtn').classList.remove('playing');
+            document.querySelectorAll('.sentence').forEach(s => s.classList.remove('highlight'));
+        }
+
+        function nextSentence() {
+            if (currentAudioIndex < totalSentences - 1) {
+                currentAudioIndex++;
+                updateUI();
+                
+                // Play the next sentence immediately
+                if (currentAudio) {
+                    currentAudio.pause();
+                }
+                loadAudio(currentAudioIndex);
+                currentAudio.play();
+                isPlaying = true;
+                document.getElementById('playBtn').innerHTML = '⏸ Pause';
+                document.getElementById('playBtn').classList.add('playing');
+            }
+        }
+
+        function previousSentence() {
+            if (currentAudioIndex > 0) {
+                currentAudioIndex--;
+                updateUI();
+                
+                // Play the previous sentence immediately
+                if (currentAudio) {
+                    currentAudio.pause();
+                }
+                loadAudio(currentAudioIndex);
+                currentAudio.play();
+                isPlaying = true;
+                document.getElementById('playBtn').innerHTML = '⏸ Pause';
+                document.getElementById('playBtn').classList.add('playing');
+            }
+        }
+
+        // Initialize
+        updateUI();
+    </script>
+</body>
+</html>
